@@ -1,0 +1,242 @@
+/* Reset and Base Styles */
+body,
+h1,
+h2,
+p,
+ul,
+li,
+button,
+input {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f0f0;
+    line-height: 1.6;
+    color: #333;
+}
+
+/* Header Styles */
+header {
+    background-color: #282c34;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+header img {
+    height: 24px;
+    vertical-align: middle;
+}
+
+header h1 {
+    display: flex;
+    align-items: center;
+}
+
+/* Navigation Bar */
+nav {
+    background-color: #333;
+    padding: 10px 0;
+    text-align: center;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+}
+
+nav ul li {
+    display: inline;
+    margin-right: 20px;
+}
+
+nav a {
+    color: #ccc;
+    text-decoration: none;
+    font-size: 18px;
+    font-weight: bold;
+    transition: color 0.3s ease-in-out;
+}
+
+nav a:hover {
+    color: #fff;
+}
+
+/* Centered Search Box */
+.search-box {
+    background-color: #282c34;
+    color: white;
+    padding: 20px;
+    text-align: center;
+    position: absolute;
+    top: 90%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 80%;
+    max-width: 500px;
+    border-radius: 8px;
+}
+
+.search-box input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-top: 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+/* Centered Movie Grid */
+.movie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    max-width: 1200px;
+    margin: 50px auto; /* Centers the grid on the page */
+}
+
+.movie {
+    background-color: white;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.3s ease-in-out;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.movie:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+}
+
+.movie img {
+    width: 100%;
+    display: block;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
+}
+
+.movie p {
+    padding: 10px;
+    font-weight: bold;
+    flex-grow: 1; /* Allows the paragraph to take available space */
+}
+
+.rating {
+    color: #f5c518;
+    padding: 5px 20px;
+    font-weight: bold;
+}
+
+.movie-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Adds space between buttons */
+    padding: 10px;
+}
+
+.movie button {
+    background-color: #051641;
+    color: white;
+    border: none;
+    padding: 10px;
+    width: 100%;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.movie button:hover {
+    background-color: #218838;
+}
+
+/* Footer */
+footer {
+    background-color: #f0f0f0;
+    color: #333;
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+}
+
+.footer-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+    max-width: 1200px;
+    margin: auto;
+}
+
+.footer-section {
+    margin: 10px;
+    padding: 0 20px;
+}
+
+.footer-section h3 {
+    color: #007bff;
+}
+
+.footer-section p,
+.footer-section a {
+    color: #666;
+}
+
+.footer-section a {
+    text-decoration: none;
+}
+
+.footer-section img {
+    height: 24px;
+    width: 24px;
+}
+
+.footer-copy {
+    width: 100%;
+    border-top: 1px solid #ccc;
+    padding: 10px 0;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .movie-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .footer-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .footer-section {
+        text-align: center;
+    }
+
+    nav ul li {
+        display: block;
+        margin-bottom: 10px;
+    }
+
+    .search-box {
+        width: 90%;
+    }
+}
+
+@media (max-width: 480px) {
+    .movie-grid {
+        grid-template-columns: 1fr;
+    }
+
+    nav ul li {
+        margin-bottom: 15px;
+    }
+}
