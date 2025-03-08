@@ -30,6 +30,7 @@ header {
     justify-content: center;
     align-items: center;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 2s ease-in-out;  
 }
 
 header img {
@@ -42,6 +43,16 @@ header h1 {
     align-items: center;
     color: #ffcc00;  
  }
+
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1100;
+    }
+}
 
 /* Navigation Bar */
 nav {
@@ -87,15 +98,16 @@ nav a:hover {
     max-width: 500px;
     border-radius: 8px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    animation: slideIn 3s ease-in-out;  
 }
 
-.search-box input[type="text"] {
-    width: 100%;
-    padding: 10px;
-    margin-top: 10px;
-    border: none;
-    border-radius: 5px;
-    font-size: 16px;
+@keyframes slideIn {
+    from {
+        transform: translate(-50%, -600%);
+    }
+    to {
+        transform: translate(-50%, -50%);
+    }
 }
 
 /* Centered Movie Grid */
@@ -136,8 +148,7 @@ nav a:hover {
 .movie p {
     padding: 10px;
     font-weight: bold;
-    flex-grow: 1; /* Allows the paragraph to take available space */
-}
+ }
 
 .rating {
     color: #f5c518;
@@ -159,12 +170,11 @@ nav a:hover {
     padding: 10px;
     width: 100%;
     cursor: pointer;
-    transition: background-color 0.2s;
-}
+ }
 
 .movie button:hover {
-    background-color: #218838;
-}
+    background-color: #ffa600;
+ }
 
 /* Footer */
 footer {
