@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "scripts": {
     "start": "node server.js",
-    "test": "jest --passWithNoTests"
+    "test": "jest --passWithNoTests",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "axios": "^0.21.4",
