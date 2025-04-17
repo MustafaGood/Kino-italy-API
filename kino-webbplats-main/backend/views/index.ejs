@@ -35,10 +35,10 @@
 
     <div class="search-box">
         <h2>Which movie would you like to watch?</h2>
-        <input type="text" placeholder="Search...">
+        <input type="text" id="movie-search" placeholder="Search..." oninput="filterMovies()">
     </div>
 
-    <div class="movie-grid">
+    <div class="movie-grid" id="movie-grid">
         <% movies.forEach(function(movie) { %>
             <div class="movie">
                 <h2>
@@ -47,20 +47,34 @@
                 <% if (movie.attributes.image && movie.attributes.image.url) { %>
                     <img src="<%= movie.attributes.image.url %>" alt="<%= movie.attributes.title %> Poster"
                         style="width: 200px; height: auto;">
-                    <% } else { %>
-                        <img src="/images/placeholder.jpg" alt="No image available" style="width: 200px; height: auto;">
-                        <% } %>
-                            <p>
-                                <%= movie.attributes.intro %>
-                            </p>
-                            <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; <%= movie.attributes.rating || 'N/A'
-                                    %> / 5</div>
-                            <button onclick="location.href='/book/<%= movie.id %>'">Book Now</button>
-                            <button onclick="location.href='/reviews/<%= movie.id %>'">Reviews</button>
+                <% } else { %>
+                    <img src="/images/placeholder.jpg" alt="No image available" style="width: 200px; height: auto;">
+                <% } %>
+                <p>
+                    <%= movie.attributes.intro %>
+                </p>
+                <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; <%= movie.attributes.rating || 'N/A' %> / 5</div>
+                <button onclick="location.href='/book/<%= movie.id %>'">Book Now</button>
+                <button onclick="location.href='/reviews/<%= movie.id %>'">Reviews</button>
             </div>
-            <% }); %>
+        <% }); %>
     </div>
 
+    <script>
+        function filterMovies() {
+            const searchInput = document.getElementById('movie-search').value.toLowerCase();
+            const movies = document.querySelectorAll('.movie-grid .movie');
+
+            movies.forEach(movie => {
+                const title = movie.querySelector('h2').textContent.toLowerCase();
+                if (title.includes(searchInput)) {
+                    movie.style.display = 'block';
+                } else {
+                    movie.style.display = 'none';
+                }
+            });
+        }
+    </script>
 
     <footer>
         <div class="footer-container">
