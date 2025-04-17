@@ -1,5 +1,4 @@
-/* Reset and Base Styles */
-body,
+ body,
 h1,
 h2,
 p,
@@ -20,8 +19,7 @@ body {
     background: linear-gradient(135deg, #00e768, #ff3300); 
 }
 
-/* Header Styles */
-header {
+ header {
     background-color: #282c34;
     color: white;
     text-align: center;
@@ -54,8 +52,7 @@ header h1 {
     }
 }
 
-/* Navigation Bar */
-nav {
+ nav {
     background-color: #333;
     padding: 10px 0;
     text-align: center;
@@ -84,8 +81,7 @@ nav a:hover {
     color: #fff;
 }
 
-/* Centered Search Box */
-.search-box {
+ .search-box {
     background-color: #282c34;
     color: white;
     padding: 20px;
@@ -110,14 +106,13 @@ nav a:hover {
     }
 }
 
-/* Centered Movie Grid */
-.movie-grid {
+ .movie-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
     padding: 20px;
     max-width: 1200px;
-    margin: 50px auto; /* Centers the grid on the page */
+    margin: 50px auto; 
 }
 
 .movie {
@@ -159,7 +154,7 @@ nav a:hover {
 .movie-buttons {
     display: flex;
     flex-direction: column;
-    gap: 5px; /* Adds space between buttons */
+    gap: 5px; 
     padding: 10px;
 }
 
@@ -176,8 +171,7 @@ nav a:hover {
     background-color: #ffa600;
  }
 
-/* Footer */
-footer {
+ footer {
     background-color: #f0f0f0;
     color: #333;
     text-align: center;
@@ -222,8 +216,7 @@ footer {
     padding: 10px 0;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+ @media (max-width: 768px) {
     .movie-grid {
         grid-template-columns: 1fr 1fr;
     }
