@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Kinofilmer</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>
+            <img src="/icons/italy.png" alt="Italy Flag"
+                style="height: 24px; vertical-align: middle; margin-right: 10px;">
+            Welcome to Kino-Italy!
+            <img src="/icons/italy.png" alt="Italy Flag"
+                style="height: 24px; vertical-align: middle; margin-left: 10px;">
+        </h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="#contact">Contact</a></li>
+            <li><a href="#about">About Us</a></li>
+            <li><a href="#movies">Movies</a></li>
+            <li><a href="#tickets">Tickets</a></li>
+            <li><a href="#login">Login</a></li>
+        </ul>
+    </nav>
+
+    <div class="video-container">
+        <video width="100%" height="auto" autoplay loop muted>
+            <source src="/video.mp4" type="video/ogg">
+        </video>
+    </div>
+
+    <div class="search-box">
+        <h2>Which movie would you like to watch?</h2>
+        <input type="text" placeholder="Search...">
+    </div>
+
+    <div class="movie-grid">
+        <% movies.forEach(function(movie) { %>
+            <div class="movie">
+                <h2>
+                    <%= movie.attributes.title %>
+                </h2>
+                <% if (movie.attributes.image && movie.attributes.image.url) { %>
+                    <img src="<%= movie.attributes.image.url %>" alt="<%= movie.attributes.title %> Poster"
+                        style="width: 200px; height: auto;">
+                    <% } else { %>
+                        <img src="/images/placeholder.jpg" alt="No image available" style="width: 200px; height: auto;">
+                        <% } %>
+                            <p>
+                                <%= movie.attributes.intro %>
+                            </p>
+                            <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; <%= movie.attributes.rating || 'N/A'
+                                    %> / 5</div>
+                            <button onclick="location.href='/book/<%= movie.id %>'">Book Now</button>
+                            <button onclick="location.href='/reviews/<%= movie.id %>'">Reviews</button>
+            </div>
+            <% }); %>
+    </div>
+
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Location</h3>
+                <p>Mustafa 30, Rom, Italy</p>
+                <p>Email: info@mustafa.com</p>
+                <p>Tel. +39 111-222-333</p>
+            </div>
+            <div class="footer-section">
+                <h3>Social</h3>
+                <a href="#"><img src="/icons/instagram.png" alt="Instagram"></a>
+                <a href="#"><img src="/icons/facebook.png" alt="Facebook"></a>
+                <a href="#"><img src="/icons/tik-tok.png" alt="TikTok"></a>
+            </div>
+            <div class="footer-section">
+                <h3>Stay Connected</h3>
+                <p>Get the latest news & updates</p>
+                <button>Sign Up</button>
+            </div>
+        </div>
+        <div class="footer-copy">
+            © 2025 by Kinofilmer. Alla rättigheter förbehållna.
+        </div>
+    </footer>
+</body>
+
+</html>
