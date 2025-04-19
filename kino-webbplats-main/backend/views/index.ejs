@@ -47,17 +47,19 @@
                 <% if (movie.attributes.image && movie.attributes.image.url) { %>
                     <img src="<%= movie.attributes.image.url %>" alt="<%= movie.attributes.title %> Poster"
                         style="width: 200px; height: auto;">
-                <% } else { %>
-                    <img src="/images/placeholder.jpg" alt="Ingen bild tillgänglig" style="width: 200px; height: auto;">
-                <% } %>
-                <p>
-                    <%= movie.attributes.intro %>
-                </p>
-                <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; <%= movie.attributes.rating || 'N/A' %> / 5</div>
-                <button onclick="location.href='/book/<%= movie.id %>'">Boka Nu</button>
-                <button onclick="location.href='/reviews/<%= movie.id %>'">Recensioner</button>
+                    <% } else { %>
+                        <img src="/images/placeholder.jpg" alt="Ingen bild tillgänglig"
+                            style="width: 200px; height: auto;">
+                        <% } %>
+                            <p>
+                                <%= movie.attributes.intro %>
+                            </p>
+                            <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; <%= movie.attributes.rating || 'N/A'
+                                    %> / 5</div>
+                            <button onclick="location.href='/book/<%= movie.id %>'">Boka Nu</button>
+                            <button onclick="location.href='/reviews/<%= movie.id %>'">Recensioner</button>
             </div>
-        <% }); %>
+            <% }); %>
     </div>
 
     <script>

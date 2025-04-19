@@ -3,8 +3,9 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   try {
     const response = await fetch("/api/screenings");
-    const data = await response.json();
+    if (!response.ok) throw new Error(`HTTP-fel! Status: ${response.status}`);
 
+    const data = await response.json();
     if (!data.length) {
       container.innerHTML = "<p>Inga kommande visningar hittades.</p>";
       return;
@@ -19,11 +20,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       div.style.borderBottom = "1px solid #ddd";
       div.style.marginBottom = "10px";
       div.innerHTML = `<strong>${movie}</strong> – ${start}`;
-
       container.appendChild(div);
     });
-  } catch (err) {
-    console.error("Kunde inte hämta visningar:", err);
-    container.innerHTML = "<p>Misslyckades med att ladda visningar.</p>";
+  } catch (error) {
+    console.error("Kunde inte hämta visningar:", error);
+    container.innerHTML = "<p>Misslyckades med att ladda visningar. Försök igen senare.</p>";
   }
 });

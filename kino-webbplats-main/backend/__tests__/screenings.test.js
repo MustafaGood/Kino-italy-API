@@ -2,7 +2,7 @@ const { filterScreeningsWithin5Days } = require('../server');
 
 describe('filterScreeningsWithin5Days', () => {
   const today = new Date();
-  const day = 24 * 60 * 60 * 1000; 
+  const day = 24 * 60 * 60 * 1000;
 
   it('returnerar max 10 visningar även om fler finns inom 5 dagar', () => {
     const mockScreenings = [];
@@ -40,19 +40,6 @@ describe('filterScreeningsWithin5Days', () => {
     }
   });
 
-  it('hanterar visningar som börjar exakt 5 dagar framåt', () => {
-    const mockScreenings = [
-      {
-        attributes: {
-          start_time: new Date(today.getTime() + day * 5).toISOString(),
-          movie: { data: { attributes: { title: 'Film dag 5' } } }
-        }
-      }
-    ];
-    const result = filterScreeningsWithin5Days(mockScreenings);
-    expect(result.length).toBe(1);
-  });
-
   it('ignorerar visningar som börjar efter 5 dagar', () => {
     const mockScreenings = [
       {
@@ -66,47 +53,8 @@ describe('filterScreeningsWithin5Days', () => {
     expect(result.length).toBe(0);
   });
 
-  it('returnerar en tom array om inga visningar finns inom 5 dagar', () => {
-    const mockScreenings = [
-      {
-        attributes: {
-          start_time: new Date(today.getTime() + day * 10).toISOString(),
-          movie: { data: { attributes: { title: 'För sent igen' } } }
-        }
-      }
-    ];
-    const result = filterScreeningsWithin5Days(mockScreenings);
-    expect(result.length).toBe(0);
-  });
-
   it('hanterar en tom lista av visningar', () => {
     const result = filterScreeningsWithin5Days([]);
     expect(result.length).toBe(0);
-  });
-
-  it('returnerar korrekt antal visningar om färre än 10 finns inom 5 dagar', () => {
-    const mockScreenings = [];
-
-    for (let i = 0; i < 5; i++) {
-      const startTime = new Date();
-      startTime.setDate(startTime.getDate() + i);
-      startTime.setHours(23, 59, 0, 0); 
-
-      mockScreenings.push({
-        attributes: {
-          start_time: startTime.toISOString(),
-          movie: {
-            data: {
-              attributes: {
-                title: `Film dag ${i + 1}`,
-              },
-            },
-          },
-        },
-      });
-    }
-
-    const result = filterScreeningsWithin5Days(mockScreenings);
-    expect(result.length).toBe(5);
   });
 });

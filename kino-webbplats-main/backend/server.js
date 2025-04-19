@@ -5,13 +5,13 @@ const path = require('path');
 const app = express();
 const port = 5080;
 
- app.set('view engine', 'ejs');
+app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
- app.use(express.static(path.join(__dirname, '../frontend')));
+app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../public')));
 
- app.get('/', async (req, res) => {
+app.get('/', async (req, res) => {
   try {
     const response = await axios.get('https://plankton-app-xhkom.ondigitalocean.app/api/movies');
     let movies = response.data.data;
@@ -29,11 +29,11 @@ app.use(express.static(path.join(__dirname, '../public')));
   }
 });
 
- app.get('/movies/:id', async (req, res) => {
+app.get('/movies/:id', async (req, res) => {
   try {
     const response = await axios.get(`https://plankton-app-xhkom.ondigitalocean.app/api/movies/${req.params.id}`);
-    if (response.data.data) {
-      const movie = response.data.data;
+    const movie = response.data.data;
+    if (movie) {
       movie.attributes.description = movie.attributes.description
         ? markdown.render(movie.attributes.description)
         : 'Ingen beskrivning tillgänglig.';
@@ -51,32 +51,15 @@ function filterScreeningsWithin5Days(screenings) {
   const today = new Date();
   const fiveDaysLater = new Date();
   fiveDaysLater.setDate(today.getDate() + 5);
-  fiveDaysLater.setHours(23, 59, 59, 999);  
+  fiveDaysLater.setHours(23, 59, 59, 999);
 
-  const filtered = screenings
+  return screenings
     .filter(item => {
       const screeningDate = new Date(item.attributes.start_time);
       return screeningDate >= today && screeningDate <= fiveDaysLater;
     })
-    .sort((a, b) => new Date(a.attributes.start_time) - new Date(b.attributes.start_time));
-
-  const groupedByDate = {};
-  const result = [];
-
-  for (const s of filtered) {
-    const date = new Date(s.attributes.start_time).toISOString().split("T")[0];
-    if (!groupedByDate[date]) groupedByDate[date] = [];
-    groupedByDate[date].push(s);
-  }
-
-  for (const date in groupedByDate) {
-    for (const screening of groupedByDate[date]) {
-      if (result.length < 10) result.push(screening);
-    }
-    if (result.length >= 10) break;
-  }
-
-  return result;
+    .sort((a, b) => new Date(a.attributes.start_time) - new Date(b.attributes.start_time))
+    .slice(0, 10);
 }
 
 app.get('/api/screenings', async (req, res) => {
@@ -86,7 +69,7 @@ app.get('/api/screenings', async (req, res) => {
     const filtered = filterScreeningsWithin5Days(screenings);
     res.json(filtered);
   } catch (error) {
-    console.error(error);
+    console.error('Misslyckades med att hämta visningar:', error);
     res.status(500).json({ message: 'Något gick fel!' });
   }
 });
