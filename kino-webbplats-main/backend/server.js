@@ -46,7 +46,7 @@ app.get('/movies/:id', async (req, res) => {
     }
   } catch (error) {
     console.error('Misslyckades med att hämta film:', error);
-    res.status(500).render('error', { message: 'Fel vid hämtning av filmdetaljer' });
+    res.status(500).render('error', { message: 'Fel vid hämtnasding av filmdetaljer' });
   }
 });
 
