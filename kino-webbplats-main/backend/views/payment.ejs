@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Betala för <%= screening.movie.title %></title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>
+            <img src="/icons/italy.png" alt="Italiens flagga" style="height: 24px; vertical-align: middle; margin-right: 10px;">
+            Kino-Italien Betalning
+            <img src="/icons/italy.png" alt="Italiens flagga" style="height: 24px; vertical-align: middle; margin-left: 10px;">
+        </h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Hem</a></li>
+            <li><a href="#movies">Filmer</a></li>
+            <li><a href="#tickets">Biljetter</a></li>
+        </ul>
+    </nav>
+
+    <div class="payment-container">
+        <div class="payment-header">
+            <h2>Betala för din filmupplevelse</h2>
+        </div>
+
+        <div class="screening-details">
+            <h3><%= screening.movie.title %></h3>
+            <p>Datum: <%= new Date(screening.start_time).toLocaleDateString('sv-SE') %></p>
+            <p>Tid: <%= new Date(screening.start_time).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'}) %></p>
+            <p>Antal biljetter: <%= tickets %></p>
+            <p>Totalt: <%= tickets * 120 %> kr</p>
+        </div>
+
+        <div class="payment-methods">
+            <div class="payment-method active" id="card-method">Kortbetalning</div>
+            <div class="payment-method" id="swish-method">Swish</div>
+        </div>
+
+        <div id="card-form" class="payment-form">
+            <div class="form-group">
+                <label for="card-number">Kortnummer</label>
+                <input type="text" id="card-number" placeholder="XXXX XXXX XXXX XXXX" maxlength="19">
+            </div>
+            <div class="form-group">
+                <label for="card-name">Namn på kortet</label>
+                <input type="text" id="card-name" placeholder="Namn på kortet">
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex: 1;">
+                    <label for="expiry-date">Utgångsdatum</label>
+                    <input type="text" id="expiry-date" placeholder="MM/ÅÅ" maxlength="5">
+                </div>
+                <div class="form-group" style="flex: 1;">
+                    <label for="cvv">CVV</label>
+                    <input type="text" id="cvv" placeholder="XXX" maxlength="3">
+                </div>
+            </div>
+        </div>
+
+        <div id="swish-form" class="payment-form" style="display: none;">
+            <div class="form-group">
+                <label for="phone-number">Mobilnummer</label>
+                <input type="tel" id="phone-number" placeholder="07XXXXXXXX" maxlength="10">
+            </div>
+            <p style="text-align: center;">En betalningsförfrågan kommer att skickas till din Swish-app.</p>
+        </div>
+
+        <div class="payment-actions">
+            <button id="submit-payment">Betala nu</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const cardMethod = document.getElementById('card-method');
+            const swishMethod = document.getElementById('swish-method');
+            const cardForm = document.getElementById('card-form');
+            const swishForm = document.getElementById('swish-form');
+            const submitButton = document.getElementById('submit-payment');
+            const cardNumber = document.getElementById('card-number');
+            const expiryDate = document.getElementById('expiry-date');
+
+            // Formatera kortnummer med mellanslag
+            cardNumber.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/\s+/g, '').replace(/[^0-9]/gi, '');
+                let formattedValue = '';
+                for (let i = 0; i < value.length; i++) {
+                    if (i > 0 && i % 4 === 0) {
+                        formattedValue += ' ';
+                    }
+                    formattedValue += value[i];
+                }
+                e.target.value = formattedValue;
+            });
+
+            // Formatera utgångsdatum med /
+            expiryDate.addEventListener('input', function(e) {
+                let value = e.target.value.replace(/[^0-9]/gi, '');
+                if (value.length > 2) {
+                    value = value.slice(0, 2) + '/' + value.slice(2);
+                }
+                e.target.value = value;
+            });
+
+            // Växla mellan betalningsmetoder
+            cardMethod.addEventListener('click', function() {
+                cardMethod.classList.add('active');
+                swishMethod.classList.remove('active');
+                cardForm.style.display = 'block';
+                swishForm.style.display = 'none';
+            });
+
+            swishMethod.addEventListener('click', function() {
+                swishMethod.classList.add('active');
+                cardMethod.classList.remove('active');
+                swishForm.style.display = 'block';
+                cardForm.style.display = 'none';
+            });
+
+            // Skicka betalning
+            submitButton.addEventListener('click', function() {
+                const isCardMethod = cardMethod.classList.contains('active');
+                let isValid = true;
+                let message = '';
+
+                if (isCardMethod) {
+                    // Validera kortuppgifter
+                    const cardNum = document.getElementById('card-number').value.replace(/\s+/g, '');
+                    const cardName = document.getElementById('card-name').value;
+                    const expiry = document.getElementById('expiry-date').value;
+                    const cvv = document.getElementById('cvv').value;
+
+                    if (cardNum.length !== 16) {
+                        isValid = false;
+                        message = 'Vänligen ange ett giltigt 16-siffrigt kortnummer';
+                    } else if (cardName.length < 3) {
+                        isValid = false;
+                        message = 'Vänligen ange ett giltigt namn på kortet';
+                    } else if (expiry.length !== 5 || !expiry.includes('/')) {
+                        isValid = false;
+                        message = 'Vänligen ange ett giltigt utgångsdatum (MM/ÅÅ)';
+                    } else if (cvv.length !== 3) {
+                        isValid = false;
+                        message = 'Vänligen ange en giltig CVV-kod (3 siffror)';
+                    }
+                } else {
+                    // Validera Swish-uppgifter
+                    const phone = document.getElementById('phone-number').value;
+                    if (phone.length !== 10 || !phone.startsWith('07')) {
+                        isValid = false;
+                        message = 'Vänligen ange ett giltigt mobilnummer (10 siffror, börjar med 07)';
+                    }
+                }
+
+                if (isValid) {
+                    // Simulera betalningsprocess 
+                    submitButton.textContent = 'Bearbetar...';
+                    submitButton.disabled = true;
+                    
+                    setTimeout(() => {
+                        window.location.href = `/confirmation?screeningId=<%= screening.id %>&tickets=<%= tickets %>`;
+                    }, 2000);
+                } else {
+                    alert(message);
+                }
+            });
+        });
+    </script>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Plats</h3>
+                <p>Mustafa 30, Rom, Italien</p>
+                <p>E-post: info@mustafa.com</p>
+                <p>Tel. +39 111-222-333</p>
+            </div>
+            <div class="footer-section">
+                <h3>Socialt</h3>
+                <a href="#"><img src="/icons/instagram.png" alt="Instagram"></a>
+                <a href="#"><img src="/icons/facebook.png" alt="Facebook"></a>
+                <a href="#"><img src="/icons/tik-tok.png" alt="TikTok"></a>
+            </div>
+            <div class="footer-section">
+                <h3>Håll Kontakten</h3>
+                <p>Få de senaste nyheterna & uppdateringarna</p>
+                <button>Registrera Dig</button>
+            </div>
+        </div>
+        <div class="footer-copy">
+            © 2025 av Kinofilmer. Alla rättigheter förbehållna.
+        </div>
+    </footer>
+</body>
+
+</html>

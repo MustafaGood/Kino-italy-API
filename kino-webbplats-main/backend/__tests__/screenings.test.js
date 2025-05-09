@@ -1,20 +1,21 @@
-const { filterScreeningsWithin5Days } = require('../server');
+const { filterScreeningsWithinDays } = require('../server');
 
-describe('filterScreeningsWithin5Days', () => {
+describe('filterScreeningsWithinDays', () => {
   const today = new Date();
   const day = 24 * 60 * 60 * 1000;
 
-  it('returnerar max 10 visningar även om fler finns inom 5 dagar', () => {
+  it('returnerar max 10 visningar även om fler finns inom X antal dagar', () => {
     const mockScreenings = [];
+    const days = 5;
     for (let i = 0; i < 15; i++) {
       mockScreenings.push({
         attributes: {
-          start_time: new Date(today.getTime() + (i % 5) * day).toISOString(),
+          start_time: new Date(today.getTime() + (i % days) * day).toISOString(),
           movie: { data: { attributes: { title: `Film ${i + 1}` } } }
         }
       });
     }
-    const result = filterScreeningsWithin5Days(mockScreenings);
+    const result = filterScreeningsWithinDays(mockScreenings, );
     expect(result.length).toBe(10);
   });
 
@@ -33,7 +34,8 @@ describe('filterScreeningsWithin5Days', () => {
         }
       }
     ];
-    const result = filterScreeningsWithin5Days(mockScreenings);
+    const days = 5;
+    const result = filterScreeningsWithinDays(mockScreenings, days);
     const dates = result.map(s => new Date(s.attributes.start_time));
     for (let i = 0; i < dates.length - 1; i++) {
       expect(dates[i] <= dates[i + 1]).toBe(true);
@@ -49,12 +51,13 @@ describe('filterScreeningsWithin5Days', () => {
         }
       }
     ];
-    const result = filterScreeningsWithin5Days(mockScreenings);
+    const days = 5;
+    const result = filterScreeningsWithinDays(mockScreenings, 5);
     expect(result.length).toBe(0);
   });
 
   it('hanterar en tom lista av visningar', () => {
-    const result = filterScreeningsWithin5Days([]);
+    const result = filterScreeningsWithinDays([], 0);
     expect(result.length).toBe(0);
   });
 });
