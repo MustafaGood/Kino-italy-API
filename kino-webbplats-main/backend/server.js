@@ -11,7 +11,7 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+app.use(express.json()); //REMOVE/TA BORT NÄR VI INTE BEHÖVER JSON och använder MongoDB istället
 
 app.get('/', async (req, res) => {
   try {
