@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+  <meta charset="UTF-8">
+  <title>Boka biljetter - <%= movie.attributes.title %></title>
+  <link rel="stylesheet" href="/style.css">
+  <style>
+    .form-row {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 15px;
+    }
+    .form-group {
+      flex: 1;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+    .error-message {
+      color: #dc3545;
+      font-size: 0.875rem;
+      margin-top: 0.25rem;
+      display: none;
+    }
+    .form-group.error input {
+      border-color: #dc3545;
+    }
+    .form-group.error .error-message {
+      display: block;
+    }
+    .price-display {
+      font-size: 1.2em;
+      font-weight: bold;
+      color: #2c3e50;
+      padding: 8px;
+      background-color: #f8f9fa;
+      border-radius: 4px;
+      text-align: center;
+    }
+  </style>
+</head>
+<body class="booking-bg">
+  <header class="header">
+    <h1 class="header-title">Boka biljetter till <%= movie.attributes.title %></h1>
+  </header>
+  <main class="center-container">
+    <div class="booking-box">
+      <img src="<%= movie.attributes.image?.url || '/images/placeholder.jpg' %>" alt="Poster" class="movie-poster">
+      <p class="movie-intro"><%= movie.attributes.intro %></p>
+      <form id="bookingForm" class="booking-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="screening">Välj visning:</label>
+            <select id="screening" name="screeningId" required>
+              <% screenings.forEach(function(screening) { %>
+                <option value="<%= screening.id %>">
+                  <%= new Date(screening.attributes.start_time).toLocaleString('sv-SE') %>
+                </option>
+              <% }); %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="seats">Antal platser:</label>
+            <!-- Input för antal platser, minst 1 och max 10 -->
+            <input type="number" id="seats" name="seats" min="1" max="10" value="1" required>
+          </div>
+          <div class="form-group">
+            <label for="totalPrice">Totalt pris:</label>
+            <!-- Visar det beräknade priset för bokningen -->
+            <div id="totalPrice" class="price-display">100 kr</div>
+          </div>
+        </div>
+
+        <h3>Kontaktinformation</h3>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="firstName">Förnamn:</label>
+            <input type="text" id="firstName" name="firstName" required minlength="2">
+            <div class="error-message" id="firstNameError"></div>
+          </div>
+          <div class="form-group">
+            <label for="lastName">Efternamn:</label>
+            <input type="text" id="lastName" name="lastName" required minlength="2">
+            <div class="error-message" id="lastNameError"></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="email">E-post:</label>
+            <input type="email" id="email" name="email" required> 
+            <div class="error-message" id="emailError"></div>
+          </div>
+          <div class="form-group">
+            <label for="phone">Telefonnummer:</label>
+            <input type="tel" id="phone" name="phone" required pattern="[0-9]{10}" placeholder="0701234567">
+            <div class="error-message" id="phoneError">Ange ett giltigt telefonnummer (10 siffror)</div>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="specialRequests">Särskilda önskemål:</label>
+          <textarea id="specialRequests" name="specialRequests" rows="3" placeholder="Till exempel: Handikappanpassad plats, allergier, etc."></textarea>
+        </div>
+
+        <button type="submit" class="btn-primary">Boka</button>
+      </form>
+    </div>
+  </main>
+  <script>
+    // Grundläggande funktioner för felhantering
+    function showError(input, message) {
+      const formGroup = input.parentElement;
+      const errorElement = formGroup.querySelector('.error-message');
+      formGroup.classList.add('error');
+      errorElement.textContent = message;
+    }
+
+    function clearError(input) {
+      const formGroup = input.parentElement;
+      const errorElement = formGroup.querySelector('.error-message');
+      formGroup.classList.remove('error');
+      errorElement.textContent = '';
+    }
+
+    // Validering av e-postadress
+    function validateEmail(email) {
+      const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return re.test(email.toLowerCase());
+    }
+
+    // Validering av telefonnummer (måste vara 10 siffror)
+    function validatePhone(phone) {
+      const re = /^[0-9]{10}$/;
+      return re.test(phone);
+    }
+
+    // Prisberäkning och hantering
+    const PRICE_PER_SEAT = 100; // Grundpris per biljett i kronor
+
+    // Funktion för att beräkna och uppdatera totalpriset
+    function updatePrice() {
+      // Hämta antal platser och konvertera till nummer
+      const seats = parseInt(document.getElementById('seats').value) || 0;
+      // Beräkna totalpris (antal platser * pris per plats)
+      const totalPrice = seats * PRICE_PER_SEAT;
+      // Uppdatera prisvisningen på sidan
+      document.getElementById('totalPrice').textContent = `${totalPrice} kr`;
+    }
+
+    // Lyssnare för att uppdatera pris när antal platser ändras
+    document.getElementById('seats').addEventListener('input', function() {
+      updatePrice();
+    });
+
+    // Uppdatera pris när sidan laddas första gången
+    document.addEventListener('DOMContentLoaded', updatePrice);
+
+    // Validering av formulärfält i realtid
+    document.getElementById('firstName').addEventListener('input', function() {
+      if (this.value.length < 2) {
+        showError(this, 'Förnamnet måste vara minst 2 tecken långt');
+      } else {
+        clearError(this);
+      }
+    });
+
+    document.getElementById('lastName').addEventListener('input', function() {
+      if (this.value.length < 2) {
+        showError(this, 'Efternamnet måste vara minst 2 tecken långt');
+      } else {
+        clearError(this);
+      }
+    });
+
+    document.getElementById('email').addEventListener('input', function() {
+      if (!validateEmail(this.value)) {
+        showError(this, 'Vänligen ange en giltig e-postadress');
+      } else {
+        clearError(this);
+      }
+    });
+
+    document.getElementById('phone').addEventListener('input', function() {
+      if (!validatePhone(this.value)) {
+        showError(this, 'Ange ett giltigt telefonnummer (10 siffror)');
+      } else {
+        clearError(this);
+      }
+    });
+
+    // Hantering av formulärinlämning
+    document.getElementById('bookingForm').addEventListener('submit', async function(e) {
+      e.preventDefault(); // Förhindra att sidan laddas om
+      
+      // Validera alla fält
+      let isValid = true;
+      const firstName = document.getElementById('firstName');
+      const lastName = document.getElementById('lastName');
+      const email = document.getElementById('email');
+      const phone = document.getElementById('phone');
+
+      // Kontrollera varje fält och visa eventuella fel
+      if (firstName.value.length < 2) {
+        showError(firstName, 'Förnamnet måste vara minst 2 tecken långt');
+        isValid = false;
+      }
+
+      if (lastName.value.length < 2) {
+        showError(lastName, 'Efternamnet måste vara minst 2 tecken långt');
+        isValid = false;
+      }
+
+      if (!validateEmail(email.value)) {
+        showError(email, 'Vänligen ange en giltig e-postadress');
+        isValid = false;
+      }
+
+      if (!validatePhone(phone.value)) {
+        showError(phone, 'Ange ett giltigt telefonnummer (10 siffror)');
+        isValid = false;
+      }
+
+      // Avbryt om något fält är ogiltigt
+      if (!isValid) return;
+
+      // Kontrollera om användaren är inloggad
+      const token = localStorage.getItem('token');
+      if (!token) {
+        alert('Du måste vara inloggad för att boka.');
+        window.location.href = '/login';
+        return;
+      }
+
+      // Samla ihop all bokningsdata
+      const movieId = "<%= movie.id %>";
+      const screeningId = document.getElementById('screening').value;
+      const seats = document.getElementById('seats').value;
+      const specialRequests = document.getElementById('specialRequests').value;
+      const totalPrice = parseInt(document.getElementById('seats').value) * PRICE_PER_SEAT;
+
+      // Skicka bokningsförfrågan till servern
+      const response = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + token
+        },
+        body: JSON.stringify({
+          movieId,
+          screeningId,
+          seats,
+          totalPrice,
+          firstName: firstName.value.trim(),
+          lastName: lastName.value.trim(),
+          email: email.value.trim().toLowerCase(),
+          phone: phone.value.trim(),
+          specialRequests: specialRequests.trim()
+        })
+      });
+
+      // Hantera svaret från servern
+      const data = await response.json();
+      if (response.ok) {
+        alert('Bokning lyckades!');
+        window.location.href = '/';
+      } else {
+        alert(data.error || 'Kunde inte boka.');
+      }
+    });
+  </script>
+</body>
+</html> 

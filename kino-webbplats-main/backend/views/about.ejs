@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Om Oss - Kino-Italien</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .about-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 20px;
+        }
+
+        .about-section {
+            background: #fff;
+            border-radius: 10px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .about-section:hover {
+            transform: translateY(-5px);
+        }
+
+        .about-section h2 {
+            color: #e63946;
+            border-bottom: 2px solid #e63946;
+            padding-bottom: 0.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .about-section p {
+            line-height: 1.6;
+            color: #333;
+            margin-bottom: 1rem;
+        }
+
+        .about-section ul {
+            list-style-type: none;
+            padding: 0;
+        }
+
+        .about-section ul li {
+            padding: 0.5rem 0;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .about-section ul li:before {
+            content: "•";
+            color: #e63946;
+            font-weight: bold;
+            position: absolute;
+            left: 0;
+        }
+
+        .hero-section {
+            background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/images/cinema-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 4rem 2rem;
+            margin-bottom: 3rem;
+        }
+
+        .hero-section h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero-section p {
+            font-size: 1.2rem;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .team-member {
+            text-align: center;
+            padding: 1rem;
+        }
+
+        .team-member img {
+            width: 150px;
+            height: 150px;
+            border-radius: 50%;
+            margin-bottom: 1rem;
+            object-fit: cover;
+        }
+
+        .team-member h3 {
+            color: #e63946;
+            margin-bottom: 0.5rem;
+        }
+
+        .team-member p {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .feature-item {
+            text-align: center;
+            padding: 1.5rem;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+
+        .feature-item i {
+            font-size: 2rem;
+            color: #e63946;
+            margin-bottom: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>
+            <img src="/icons/italy.png" alt="Italiens flagga" style="height: 24px; vertical-align: middle; margin-right: 10px;">
+            Om Oss
+            <img src="/icons/italy.png" alt="Italiens flagga" style="height: 24px; vertical-align: middle; margin-left: 10px;">
+        </h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Hem</a></li>
+            <li><a href="/contact">Kontakt</a></li>
+            <li><a href="/movies">Filmer</a></li>
+            <li><a href="/tickets">Biljetter</a></li>
+            <li><a href="/login">Logga In</a></li>
+            <li><a href="/register">Registrera</a></li>
+        </ul>
+    </nav>
+
+    <div class="hero-section">
+        <h1>Välkommen till Kino-Italien</h1>
+        <p>Din destination för en unik filmupplevelse i hjärtat av Rom</p>
+    </div>
+
+    <div class="about-container">
+        <section class="about-section">
+            <h2>Vår Historia</h2>
+            <p>Kino-Italien grundades 2020 med en passion för att erbjuda den bästa filmupplevelsen i Rom. Vi kombinerar modern teknik med traditionell italiensk gästfrihet för att skapa en unik biografupplevelse.</p>
+            <p>Från våra första dagar har vi strävat efter att skapa en plats där filmälskare kan samlas och uppleva magin av film i en atmosfär som kombinerar italiensk kultur med modern underhållning.</p>
+        </section>
+
+        <section class="about-section">
+            <h2>Vår Vision</h2>
+            <p>Vi strävar efter att vara Italiens ledande biografkedja genom att erbjuda:</p>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i>🎬</i>
+                    <h3>Senaste Filmerna</h3>
+                    <p>Alltid först med de senaste premiärerna</p>
+                </div>
+                <div class="feature-item">
+                    <i>🪑</i>
+                    <h3>Moderna Salonger</h3>
+                    <p>Bekväma och moderna visningsrum</p>
+                </div>
+                <div class="feature-item">
+                    <i>⭐</i>
+                    <h3>Kundservice</h3>
+                    <p>Utmärkt service och personlig uppmärksamhet</p>
+                </div>
+                <div class="feature-item">
+                    <i>🇮🇹</i>
+                    <h3>Italiensk Kultur</h3>
+                    <p>En unik atmosfär som kombinerar film och kultur</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <h2>Våra Salonger</h2>
+            <p>Våra moderna salonger är utrustade med:</p>
+            <div class="features-grid">
+                <div class="feature-item">
+                    <i>📽️</i>
+                    <h3>4K Projektorer</h3>
+                    <p>Krystalklar bildkvalitet</p>
+                </div>
+                <div class="feature-item">
+                    <i>🔊</i>
+                    <h3>Dolby Atmos</h3>
+                    <p>Immersivt ljudsystem</p>
+                </div>
+                <div class="feature-item">
+                    <i>🪑</i>
+                    <h3>Premium Fåtöljer</h3>
+                    <p>Extra bekväma säten</p>
+                </div>
+                <div class="feature-item">
+                    <i>❄️</i>
+                    <h3>Klimatkontroll</h3>
+                    <p>Perfekt temperatur året runt</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="about-section">
+            <h2>Vårt Team</h2>
+            <p>Vårt dedikerade team består av filmentusiaster som är passionerade om att ge dig den bästa möjliga upplevelsen. Från våra biljettförsäljare till våra projektionister, varje medlem av vårt team är utbildad för att säkerställa högsta kvalitet i allt vi gör.</p>
+            <div class="team-grid">
+                <div class="team-member">
+                    <img src="/icons/mustafa.jpg" alt="Team Member" onerror="this.src='/icons/placeholder.jpg'">
+                    <h3>Mustafa Salahuddin</h3>
+                    <p>Biografchef</p>
+                </div>
+                <div class="team-member">
+                    <img src="/icons/Christoffer .png" alt="Team Member" onerror="this.src='/icons/placeholder.jpg'">
+                    <h3>Christoffer Lindroth</h3>
+                    <p>Kundservice Manager</p>
+                </div>
+ 
+            </div>
+        </section>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Plats</h3>
+                <p>Mustafa 30, Rom, Italien</p>
+                <p>E-post: info@mustafa.com</p>
+                <p>Tel. +39 111-222-333</p>
+            </div>
+            <div class="footer-section">
+                <h3>Socialt</h3>
+                <a href="#"><img src="/icons/instagram.png" alt="Instagram"></a>
+                <a href="#"><img src="/icons/facebook.png" alt="Facebook"></a>
+                <a href="#"><img src="/icons/tik-tok.png" alt="TikTok"></a>
+            </div>
+        </div>
+        <div class="footer-copy">
+            © 2025 av Kinofilmer. Alla rättigheter förbehållna.
+        </div>
+    </footer>
+</body>
+</html> 

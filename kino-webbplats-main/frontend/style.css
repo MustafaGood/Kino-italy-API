@@ -249,3 +249,214 @@ nav a:hover {
         margin-bottom: 15px;
     }
 }
+
+/* Authentication Styles */
+.auth-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: calc(100vh - 200px);
+    padding: 20px;
+}
+
+.auth-box {
+    background: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+}
+
+.auth-box h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.auth-form .form-group {
+    margin-bottom: 20px;
+}
+
+.auth-form label {
+    display: block;
+    margin-bottom: 5px;
+    color: #666;
+}
+
+.auth-form input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.auth-form input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.auth-form button {
+    width: 100%;
+    padding: 12px;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.auth-form button:hover {
+    background: #0056b3;
+}
+
+.auth-link {
+    text-align: center;
+    margin-top: 20px;
+    color: #666;
+}
+
+.auth-link a {
+    color: #007bff;
+    text-decoration: none;
+}
+
+.auth-link a:hover {
+    text-decoration: underline;
+}
+
+/* Error message styles */
+.error-message {
+    color: #dc3545;
+    background: #f8d7da;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Success message styles */
+.success-message {
+    color: #28a745;
+    background: #d4edda;
+    padding: 10px;
+    border-radius: 4px;
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+/* Extra styles for book.ejs modern booking page */
+.booking-box {
+    background: rgba(255,255,255,0.98);
+    padding: 38px 32px 32px 32px;
+    border-radius: 22px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    max-width: 420px;
+    width: 100%;
+    margin: 32px 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    animation: fadeIn 1.2s;
+}
+
+.center-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+    width: 100vw;
+}
+.movie-poster {
+    display: block;
+    margin: 0 auto 22px auto;
+    width: 210px;
+    max-width: 90vw;
+    border-radius: 16px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.13);
+}
+
+.movie-intro {
+    text-align: center;
+    color: #444;
+    margin-bottom: 28px;
+    font-size: 1.13rem;
+    line-height: 1.5;
+}
+
+.booking-form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+.booking-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+}
+
+.booking-form label {
+    color: #222;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+.booking-form input,
+.booking-form select {
+    width: 100%;
+    padding: 12px 10px;
+    border: 1.5px solid #e0e0e0;
+    border-radius: 7px;
+    font-size: 1.08rem;
+    background: #f8f8f8;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.booking-form input:focus,
+.booking-form select:focus {
+    border-color: #00e768;
+    outline: none;
+    background: #fff;
+    box-shadow: 0 0 0 2px #00e76833;
+}
+
+.btn-primary {
+    width: 100%;
+    padding: 15px;
+    background: linear-gradient(90deg, #00e768 0%, #ff3300 100%);
+    color: #fff;
+    border: none;
+    border-radius: 7px;
+    font-size: 1.15rem;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(90deg, #00c95a 0%, #ff6600 100%);
+    transform: translateY(-2px) scale(1.04);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.13);
+}
+
+@media (max-width: 600px) {
+    .booking-box {
+        padding: 12px 2vw 18px 2vw;
+        max-width: 98vw;
+    }
+    .movie-poster {
+        width: 120px;
+    }
+    .booking-title, .header-title {
+        font-size: 1.1rem;
+    }
+}
