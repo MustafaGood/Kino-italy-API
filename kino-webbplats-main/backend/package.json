@@ -1,18 +1,24 @@
 {
-  "name": "kino-webbplats",
+  "name": "kino-italy-backend",
   "version": "1.0.0",
+  "description": "Backend for Kino-Italy cinema website",
+  "main": "server.js",
   "scripts": {
     "start": "node server.js",
-    "test": "jest"
+    "dev": "nodemon server.js"
   },
   "dependencies": {
-    "ejs": "^3.1.6",
-    "express": "^4.17.1",
-    "markdown-it": "^14.1.0",
-    "node-fetch": "^2.7.0"
+    "bcryptjs": "^2.4.3",
+    "dotenv": "^16.5.0",
+    "ejs": "^3.1.9",
+    "express": "^4.18.2",
+    "jsonwebtoken": "^9.0.0",
+    "markdown-it": "^13.0.1",
+    "mongoose": "^7.0.3",
+    "node-fetch": "^2.6.9"
   },
   "devDependencies": {
-    "jest": "^27.5.1"
+    "nodemon": "^2.0.22"
   },
   "jest": {
     "testMatch": [

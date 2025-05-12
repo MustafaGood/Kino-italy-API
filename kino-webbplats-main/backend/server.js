@@ -1,24 +1,57 @@
+// Laddar in miljövariabler från .env filen
+require('dotenv').config();
+
+// Importerar nödvändiga paket
 const express = require('express');
 const markdown = require('markdown-it')();
 const path = require('path');
-const fetch = require('node-fetch');  
+const fetch = require('node-fetch');
+const mongoose = require('mongoose');
+const authRoutes = require('./routes/auth');
+const bookingRoutes = require('./routes/bookings');
+const Booking = require('./models/Booking');
+const auth = require('./middleware/auth');
+
+// Ansluter till MongoDB databasen
+const uri = process.env.MONGODB_URI;
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true });
+
+// Hanterar databasanslutning
+mongoose.connection.on('connected', () => {
+  console.log('✅ Ansluten till MongoDB!');
+});
+mongoose.connection.on('error', (err) => {
+  console.error('❌ MongoDB-anslutningsfel:', err);
+});
+
+// Skapar Express-applikationen
 const app = express();
 const port = 5080;
 
+// Konfigurerar Express
+app.use(express.json());
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+// Sätter upp statiska filer
 app.use(express.static(path.join(__dirname, '../frontend')));
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json()); //REMOVE/TA BORT NÄR VI INTE BEHÖVER JSON och använder MongoDB istället
 
+// API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/bookings', bookingRoutes);
+
+// Huvudsidan - visar alla filmer
 app.get('/', async (req, res) => {
   try {
+    // Hämtar filmer från extern API
     const response = await fetch('https://plankton-app-xhkom.ondigitalocean.app/api/movies');
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     let movies = (await response.json()).data;
 
+    // Om det finns för få filmer, lägg till en extra
     if (movies.length < 10) {
       const extraResponse = await fetch('https://plankton-app-xhkom.ondigitalocean.app/api/movies/1');
       if (!extraResponse.ok) throw new Error(`HTTP error! status: ${extraResponse.status}`);
@@ -33,12 +66,14 @@ app.get('/', async (req, res) => {
   }
 });
 
+// Visar detaljerad information om en specifik film
 app.get('/movies/:id', async (req, res) => {
   try {
     const response = await fetch(`https://plankton-app-xhkom.ondigitalocean.app/api/movies/${req.params.id}`);
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const movie = (await response.json()).data;
     if (movie) {
+      // Konverterar markdown-beskrivning till HTML
       movie.attributes.description = movie.attributes.description
         ? markdown.render(movie.attributes.description)
         : 'Ingen beskrivning tillgänglig.';
@@ -52,79 +87,8 @@ app.get('/movies/:id', async (req, res) => {
   }
 });
 
-// Betalningsrutter (Christoffers branch)
-/*
-
-// Betalning (Christoffers branch) [IMPLEMENTERA] med mongoDB, login och bokningssystem.
-app.get('/payment', async (req, res) => {
-  try {
-    const { screeningId, tickets } = req.query;
-    
-    if (!screeningId || !tickets) {
-      return res.status(400).render('error', { message: 'Saknar nödvändig information för betalning' });
-    }
-
-    const response = await fetch(`https://plankton-app-xhkom.ondigitalocean.app/api/screenings/${screeningId}?populate=movie`);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const screening = (await response.json()).data;
-
-    const screeningData = {
-      id: screening.id,
-      start_time: screening.attributes.start_time,
-      movie: {
-        title: screening.attributes.movie.data.attributes.title,
-        image: screening.attributes.movie.data.attributes.image
-      }
-    };
-
-    res.render('payment', { 
-      screening: screeningData, 
-      tickets: parseInt(tickets) 
-    });
-  } catch (error) {
-    console.error('Fel vid förberedelse av betalning:', error);
-    res.status(500).render('error', { message: 'Kunde inte förbereda betalning' });
-  }
-});
-
-// Bekräftelse (Christoffers branch) [IMPLEMENTERA] med mongoDB, login och bokningssystem.
-app.get('/confirmation', async (req, res) => {
-  try {
-    const { screeningId, tickets } = req.query;
-    
-    if (!screeningId || !tickets) {
-      return res.status(400).render('error', { message: 'Saknar nödvändig information för bekräftelse' });
-    }
-
-    const response = await fetch(`https://plankton-app-xhkom.ondigitalocean.app/api/screenings/${screeningId}?populate=movie`);
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const screening = (await response.json()).data;
-
-    const screeningData = {
-      id: screening.id,
-      start_time: screening.attributes.start_time,
-      movie: {
-        title: screening.attributes.movie.data.attributes.title,
-        image: screening.attributes.movie.data.attributes.image
-      }
-    };
-
-    // (Christoffers branch) [IMPLEMENTERA] med mongoDB, login och bokningssystem.
-    const bookingId = Math.floor(100000 + Math.random() * 900000);
-
-    res.render('confirmation', { 
-      screening: screeningData, 
-      tickets: parseInt(tickets),
-      bookingId: bookingId
-    });
-  } catch (error) {
-    console.error('Fel vid generering av bekräftelse:', error);
-    res.status(500).render('error', { message: 'Kunde inte generera bekräftelse' });
-  }
-});
-*/
-
-function filterScreeningsWithinDays(screenings, days) {
+// Funktion för att filtrera visningar inom de närmaste 5 dagarna
+function filterScreeningsWithin5Days(screenings) {
   const today = new Date();
   const lastFilterDay = new Date();
   lastFilterDay.setDate(today.getDate() + days);
@@ -141,6 +105,7 @@ function filterScreeningsWithinDays(screenings, days) {
     .slice(0, 10);
 }
 
+// API endpoint för att hämta visningar
 app.get('/api/screenings', async (req, res) => {
   try {
     const response = await fetch('https://plankton-app-xhkom.ondigitalocean.app/api/screenings?populate=movie');
@@ -150,12 +115,109 @@ app.get('/api/screenings', async (req, res) => {
     res.json(filtered);
   } catch (error) {
     console.error('Misslyckades med att hämta visningar:', error);
-    res.status(500).json({ message: 'Något gick fel! Försök igen.' });
+    res.status(500).json({ message: 'Något gick fel! Hej, Försöka igen' });
   }
 });
 
-module.exports = { app, filterScreeningsWithinDays };
+// Routes för inloggning och registrering
+app.get('/login', (req, res) => {
+  res.render('login');
+});
 
+app.get('/register', (req, res) => {
+  res.render('register');
+});
+
+// Routes för kontakt och om oss sidor
+app.get('/contact', (req, res) => {
+  res.render('contact');
+});
+
+app.get('/about', (req, res) => {
+  res.render('about');
+});
+
+// Hantera POST-förfrågan från kontaktformuläret
+app.post('/contact', express.urlencoded({ extended: true }), (req, res) => {
+  // Här kan du lägga till logik för att hantera kontaktformuläret
+  // Till exempel skicka e-post eller spara i databasen
+  console.log('Kontaktformulär mottaget:', req.body);
+  res.redirect('/contact?success=true');
+});
+
+app.get('/auth/login', (req, res) => {
+  res.render('login');
+});
+
+app.get('/auth/register', (req, res) => {
+  res.render('register');
+});
+
+// Bokningssida för inloggade användare
+app.get('/auth/book/:id', async (req, res) => {
+  try {
+    // Hämtar filmens detaljer
+    const response = await fetch(`https://plankton-app-xhkom.ondigitalocean.app/api/movies/${req.params.id}`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const movie = (await response.json()).data;
+
+    // Hämtar visningar för denna film
+    const screeningsResponse = await fetch(`https://plankton-app-xhkom.ondigitalocean.app/api/screenings?populate=movie`);
+    const screeningsData = await screeningsResponse.json();
+    const screenings = screeningsData.data.filter(
+      s => s.attributes.movie.data && s.attributes.movie.data.id == req.params.id
+    );
+
+    res.render('book', { movie, screenings });
+  } catch (error) {
+    res.status(500).render('error', { message: 'Kunde inte ladda bokningssidan.' });
+  }
+});
+
+// Hanterar fall där ingen film är vald för bokning
+app.get('/auth/book', (req, res) => {
+  res.render('error', { message: 'Ingen film vald för bokning.' });
+});
+
+// Bokningssida för alla användare
+app.get('/book/:id', async (req, res) => {
+  try {
+    // Hämtar filmens detaljer
+    const response = await fetch(`https://plankton-app-xhkom.ondigitalocean.app/api/movies/${req.params.id}`);
+    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+    const movie = (await response.json()).data;
+
+    // Hämtar visningar för denna film
+    const screeningsResponse = await fetch(`https://plankton-app-xhkom.ondigitalocean.app/api/screenings?populate=movie`);
+    const screeningsData = await screeningsResponse.json();
+    const screenings = screeningsData.data.filter(
+      s => s.attributes.movie.data && s.attributes.movie.data.id == req.params.id
+    );
+
+    res.render('book', { movie, screenings });
+  } catch (error) {
+    res.status(500).render('error', { message: 'Kunde inte ladda bokningssidan.' });
+  }
+});
+
+// Hanterar fall där ingen film är vald för bokning
+app.get('/book', (req, res) => {
+  res.render('error', { message: 'Ingen film vald för bokning.' });
+});
+
+// Admin-sida för att se alla bokningar
+app.get('/admin/bookings', auth, async (req, res) => {
+  if (req.user.role !== 'admin') {
+    return res.status(403).render('error', { message: 'Endast administratörer har behörighet.' });
+  }
+  const bookings = await Booking.find().sort({ createdAt: -1 });
+  res.render('admin-bookings', { bookings });
+});
+
+// Exporterar app och funktioner
+module.exports = { app, filterScreeningsWithin5Days };
+
+// Startar servern om filen körs direkt
 if (require.main === module) {
   app.listen(port, () => {
     console.log(`Server running at http://localhost:${port}`);

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kontakt - Kino-Italien</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        .contact-container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 3rem;
+        }
+
+        .contact-info,
+        .contact-form {
+            background: #fff;
+            padding: 2rem;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .contact-info h2,
+        .contact-form h2 {
+            color: #1a1a1a;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #e63946;
+            padding-bottom: 0.5rem;
+        }
+
+        .contact-info p {
+            margin: 1rem 0;
+            color: #333;
+            font-size: 1.1rem;
+        }
+
+        .contact-info ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .contact-info ul li {
+            margin: 0.5rem 0;
+            color: #333;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group textarea {
+            width: 100%;
+            padding: 0.8rem;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #e63946;
+        }
+
+        button[type="submit"] {
+            background-color: #e63946;
+            color: white;
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #c1121f;
+        }
+
+        @media (max-width: 768px) {
+            .contact-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer-container {
+            background-color: #1a1a1a;
+            color: white;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        .footer-section {
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+
+        .footer-section img {
+            width: 30px;
+            margin: 0 10px;
+            transition: transform 0.3s ease;
+        }
+
+        .footer-section img:hover {
+            transform: scale(1.1);
+        }
+
+        .footer-copy {
+            text-align: center;
+            padding: 1rem 0;
+            background-color: #111;
+            color: #fff;
+        }
+    </style>
+</head>
+
+<body>
+    <header>
+        <h1>
+            <img src="/icons/italy.png" alt="Italiens flagga"
+                style="height: 24px; vertical-align: middle; margin-right: 10px;">
+            Kontakta Oss
+            <img src="/icons/italy.png" alt="Italiens flagga"
+                style="height: 24px; vertical-align: middle; margin-left: 10px;">
+        </h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Hem</a></li>
+            <li><a href="/about">Om Oss</a></li>
+            <li><a href="/movies">Filmer</a></li>
+            <li><a href="/tickets">Biljetter</a></li>
+            <li><a href="/login">Logga In</a></li>
+            <li><a href="/register">Registrera</a></li>
+        </ul>
+    </nav>
+
+    <div class="contact-container">
+        <div class="contact-info">
+            <h2>Kontaktinformation</h2>
+            <p><strong>Adress:</strong> Mustafa 30, Rom, Italien</p>
+
+            <p><strong>Öppettider:</strong></p>
+            <ul>
+                <li>Måndag - Fredag: 10:00 - 22:00</li>
+                <li>Lördag - Söndag: 11:00 - 23:00</li>
+            </ul>
+            <p><strong>Vårt Team:</strong></p>
+            <div class="team-member">
+                <img src="/icons/mustafa.jpg" alt="Team Member" onerror="this.src='/icons/placeholder.jpg'"
+                    style="width: 150px; height: 150px; border-radius: 50%; margin-bottom: 1rem; object-fit: cover;">
+                <h3>Mustafa Salahuddin - Biografchef</h3>
+                <p>Tel: 071 111 111 111, språk: svenska<br>E-post: info@mustafa.se</p>
+            </div>
+            <div class="team-member">
+                <img src="/icons/Christoffer .png" alt="Team Member" onerror="this.src='/icons/placeholder.jpg'"
+                    style="width: 150px; height: 150px; border-radius: 50%; margin-bottom: 1rem; object-fit: cover;">
+                <h3>Christoffer Lindroth  - Kundservice Manager</h3>
+                <p>Tel: 072 222 222 222, språk: engelska<br>E-post: info@christoffer.com</p>
+            </div>
+        </div>
+
+        <div class="contact-form">
+            <h2>Skicka ett meddelande</h2>
+            <form action="/contact" method="POST">
+                <div class="form-group">
+                    <label for="name">Namn:</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">E-post:</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="phone">Telefonnummer:</label>
+                    <input type="phone" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                    <label for="subject">Ämne:</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+                <div class="form-group">
+                    <label for="message">Meddelande:</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit">Skicka</button>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+
+            <div class="footer-section">
+                <h3>Socialt</h3>
+                <a href="#"><img src="/icons/instagram.png" alt="Instagram"></a>
+                <a href="#"><img src="/icons/facebook.png" alt="Facebook"></a>
+                <a href="#"><img src="/icons/tik-tok.png" alt="TikTok"></a>
+            </div>
+        </div>
+        <div class="footer-copy">
+            © 2025 av Kinofilmer. Alla rättigheter förbehållna.
+        </div>
+    </footer>
+</body>
+
+</html>

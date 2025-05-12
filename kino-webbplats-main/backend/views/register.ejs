@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Registrera dig - Kino-Italien</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        /* Stilar för felmeddelanden */
+        .error-message {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        /* Stilar för felaktiga formulärfält */
+        .form-group.error input {
+            border-color: #dc3545;
+        }
+        .form-group.error .error-message {
+            display: block;
+        }
+        /* Stilar för laddningsanimation */
+        .loading {
+            opacity: 0.7;
+            pointer-events: none;
+        }
+        .loading::after {
+            content: "Registrerar...";
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+    </style>
+</head>
+<body>
+    <!-- Header med Italiens flagga och titel -->
+    <header>
+        <h1>
+            <img src="/icons/italy.png" alt="Italiens flagga" style="height: 24px; vertical-align: middle; margin-right: 10px;">
+            Kino-Italien
+            <img src="/icons/italy.png" alt="Italiens flagga" style="height: 24px; vertical-align: middle; margin-left: 10px;">
+        </h1>
+    </header>
+
+    <!-- Huvudcontainer för registreringsformuläret -->
+    <div class="auth-container">
+        <div class="auth-box">
+            <h2>Registrera dig</h2>
+            <!-- Registreringsformulär -->
+            <form id="registerForm" class="auth-form">
+                <!-- Namnfält -->
+                <div class="form-group">
+                    <label for="name">Namn</label>
+                    <input type="text" id="name" name="name" required minlength="2" maxlength="50">
+                    <div class="error-message" id="nameError"></div>
+                </div>
+                <!-- E-postfält -->
+                <div class="form-group">
+                    <label for="email">E-post</label>
+                    <input type="email" id="email" name="email" required>
+                    <div class="error-message" id="emailError"></div>
+                </div>
+                <!-- Lösenordsfält -->
+                <div class="form-group">
+                    <label for="password">Lösenord</label>
+                    <input type="password" id="password" name="password" required minlength="8" 
+                           pattern="^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$">
+                    <div class="error-message" id="passwordError">
+                        Lösenordet måste vara minst 8 tecken långt och innehålla minst en bokstav och en siffra.
+                    </div>
+                </div>
+                <!-- Bekräfta lösenordsfält -->
+                <div class="form-group">
+                    <label for="confirmPassword">Bekräfta lösenord</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <div class="error-message" id="confirmPasswordError"></div>
+                </div>
+                <!-- Skicka-knapp -->
+                <button type="submit" id="submitButton">Registrera</button>
+                <!-- Serverfelmeddelande -->
+                <div class="error-message" id="serverError" style="margin-top:10px;text-align:center;"></div>
+            </form>
+            <!-- Länk till inloggningssida -->
+            <p class="auth-link">Har du redan ett konto? <a href="/login">Logga in här</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Hämta DOM-element
+        const form = document.getElementById('registerForm');
+        const submitButton = document.getElementById('submitButton');
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+
+        // Funktion för att visa felmeddelanden
+        function showError(input, message) {
+            const formGroup = input.parentElement;
+            const errorElement = formGroup.querySelector('.error-message');
+            formGroup.classList.add('error');
+            errorElement.textContent = message;
+        }
+
+        // Funktion för att rensa felmeddelanden
+        function clearError(input) {
+            const formGroup = input.parentElement;
+            const errorElement = formGroup.querySelector('.error-message');
+            formGroup.classList.remove('error');
+            errorElement.textContent = '';
+        }
+
+        // Funktion för att validera e-postadress
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email.toLowerCase());
+        }
+
+        // Funktion för att validera lösenord
+        function validatePassword(password) {
+            const re = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&]{8,}$/;
+            return re.test(password);
+        }
+
+        // Realtidsvalidering för namn
+        nameInput.addEventListener('input', () => {
+            if (nameInput.value.length < 2) {
+                showError(nameInput, 'Namnet måste vara minst 2 tecken långt');
+            } else {
+                clearError(nameInput);
+            }
+        });
+
+        // Realtidsvalidering för e-post
+        emailInput.addEventListener('input', () => {
+            if (!validateEmail(emailInput.value)) {
+                showError(emailInput, 'Vänligen ange en giltig e-postadress');
+            } else {
+                clearError(emailInput);
+            }
+        });
+
+        // Realtidsvalidering för lösenord
+        passwordInput.addEventListener('input', () => {
+            if (!validatePassword(passwordInput.value)) {
+                showError(passwordInput, 'Lösenordet måste vara minst 8 tecken långt och innehålla minst en bokstav och en siffra');
+            } else {
+                clearError(passwordInput);
+            }
+        });
+
+        // Realtidsvalidering för lösenordsbekräftelse
+        confirmPasswordInput.addEventListener('input', () => {
+            if (confirmPasswordInput.value !== passwordInput.value) {
+                showError(confirmPasswordInput, 'Lösenorden matchar inte');
+            } else {
+                clearError(confirmPasswordInput);
+            }
+        });
+
+        // Hantera formulärinlämning
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Validera alla fält
+            let isValid = true;
+            
+            if (nameInput.value.length < 2) {
+                showError(nameInput, 'Namnet måste vara minst 2 tecken långt');
+                isValid = false;
+            }
+
+            if (!validateEmail(emailInput.value)) {
+                showError(emailInput, 'Vänligen ange en giltig e-postadress');
+                isValid = false;
+            }
+
+            if (!validatePassword(passwordInput.value)) {
+                showError(passwordInput, 'Lösenordet måste vara minst 8 tecken långt och innehålla minst en bokstav och en siffra');
+                isValid = false;
+            }
+
+            if (confirmPasswordInput.value !== passwordInput.value) {
+                showError(confirmPasswordInput, 'Lösenorden matchar inte');
+                isValid = false;
+            }
+
+            if (!isValid) return;
+
+            // Inaktivera formulär och visa laddningsanimation
+            form.classList.add('loading');
+            submitButton.disabled = true;
+            document.getElementById('serverError').textContent = '';
+
+            try {
+                // Skicka registreringsdata till servern
+                const response = await fetch('/api/auth/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: nameInput.value.trim(),
+                        email: emailInput.value.trim().toLowerCase(),
+                        password: passwordInput.value,
+                        confirmPassword: confirmPasswordInput.value
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    // Spara token och omdirigera vid lyckad registrering
+                    localStorage.setItem('token', data.token);
+                    window.location.href = '/';
+                } else {
+                    // Hantera specifika felmeddelanden
+                    if (data.error && data.error.includes('e-postadressen är redan registrerad')) {
+                        showError(emailInput, 'Denna e-postadress är redan registrerad');
+                    } else if (data.details) {
+                        document.getElementById('serverError').textContent = data.details;
+                    } else {
+                        alert(data.error || 'Ett fel uppstod vid registrering');
+                    }
+                }
+            } catch (error) {
+                alert('Ett fel uppstod vid registrering. Vänligen försök igen senare.');
+            } finally {
+                // Återaktivera formulär
+                form.classList.remove('loading');
+                submitButton.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> 

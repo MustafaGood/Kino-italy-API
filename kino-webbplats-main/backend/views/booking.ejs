@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <title>Boka biljetter - Kino-Italien</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+    <!-- Huvudrubrik med italiensk flagga -->
+    <header>
+        <h1>
+            <img src="/icons/italy.png" alt="Italiens flagga" style="height: 24px; vertical-align: middle; margin-right: 10px;">
+            Kino-Italien
+            <img src="/icons/italy.png" alt="Italiens flagga" style="height: 24px; vertical-align: middle; margin-left: 10px;">
+        </h1>
+    </header>
+
+    <!-- Huvudcontainer för bokningsformuläret -->
+    <div class="auth-container">
+        <div class="auth-box">
+            <h2>Boka biljetter</h2>
+            <!-- Formulär för att boka biljetter -->
+            <form id="bookingForm" class="auth-form">
+                <!-- Välj film från dropdown-meny -->
+                <div class="form-group">
+                    <label for="movie">Film</label>
+                    <select id="movie" name="movie" required>
+                        <!-- Filmerna laddas dynamiskt via JavaScript -->
+                    </select>
+                </div>
+                <!-- Välj visningstid från dropdown-meny -->
+                <div class="form-group">
+                    <label for="screening">Visningstid</label>
+                    <select id="screening" name="screening" required>
+                        <!-- Visningstiderna laddas dynamiskt via JavaScript -->
+                    </select>
+                </div>
+                <!-- Välj antal platser (1-10) -->
+                <div class="form-group">
+                    <label for="seats">Antal platser</label>
+                    <input type="number" id="seats" name="seats" min="1" max="10" required>
+                </div>
+                <!-- Visar totalpriset (beräknas automatiskt) -->
+                <div class="form-group">
+                    <label for="totalPrice">Totalt pris</label>
+                    <input type="text" id="totalPrice" readonly>
+                </div>
+                <button type="submit">Bekräfta bokning</button>
+            </form>
+            <!-- Länk för att visa användarens bokningar -->
+            <p class="auth-link">Vill du se dina bokningar? <a href="#" id="showBookings">Visa mina bokningar</a></p>
+            <!-- Container där bokningarna visas -->
+            <div id="myBookings" style="margin-top: 2em;"></div>
+        </div>
+    </div>
+
+    <script>
+        // Hanterar när formuläret skickas in
+        document.getElementById('bookingForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Hämtar värden från formuläret
+            const movie = document.getElementById('movie').value;
+            const screening = document.getElementById('screening').value;
+            const seats = document.getElementById('seats').value;
+
+            try {
+                // Skickar bokningsförfrågan till servern
+                const response = await fetch('/api/bookings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    },
+                    body: JSON.stringify({ movie, screening, seats })
+                });
+
+                const data = await response.json();
+
+                // Hanterar svaret från servern
+                if (response.ok) {
+                    alert('Bokning bekräftad!');
+                    window.location.href = '/my-bookings';
+                } else {
+                    alert(data.error || 'Ett fel uppstod vid bokning');
+                }
+            } catch (error) {
+                alert('Ett fel uppstod vid bokning');
+            }
+        });
+
+        // Uppdaterar totalpriset när antalet platser ändras
+        document.getElementById('seats').addEventListener('change', function() {
+            const seats = this.value;
+            const pricePerSeat = 100; // Exempelpris per plats
+            document.getElementById('totalPrice').value = `${seats * pricePerSeat} kr`;
+        });
+
+        // Funktion för att ladda och visa användarens bokningar
+        async function loadBookings() {
+            const token = localStorage.getItem('token');
+            if (!token) return;
+            
+            // Hämtar bokningar från servern
+            const res = await fetch('/api/bookings/my-bookings', {
+                headers: { 'Authorization': 'Bearer ' + token }
+            });
+            const bookings = await res.json();
+            const container = document.getElementById('myBookings');
+            
+            // Visar bokningarna om det finns några
+            if (Array.isArray(bookings) && bookings.length) {
+                container.innerHTML = '<h3>Mina bokningar</h3>' + bookings.map(b =>
+                    `<div style="border:1px solid #ccc;padding:8px;margin-bottom:8px;">
+                        <b>Film:</b> ${b.movie}<br>
+                        <b>Visning:</b> ${b.screening}<br>
+                        <b>Platser:</b> ${b.seats}<br>
+                        <b>Pris:</b> ${b.totalPrice} kr
+                    </div>`
+                ).join('');
+            } else {
+                container.innerHTML = '<i>Inga bokningar ännu.</i>';
+            }
+        }
+
+        // Lägger till event-lyssnare för att visa bokningar
+        document.getElementById('showBookings').addEventListener('click', function(e) {
+            e.preventDefault();
+            loadBookings();
+        });
+    </script>
+</body>
+</html> 
