@@ -68,9 +68,9 @@
             </select>
           </div>
           <div class="form-group">
-            <label for="seats">Antal platser:</label>
+            <label for="totalSeats">Antal platser:</label>
             <!-- Input för antal platser, minst 1 och max 10 -->
-            <input type="number" id="seats" name="seats" min="1" max="10" value="1" required>
+            <input type="number" id="totalSeats" name="totalSeats" min="1" max="10" value="1" required>
           </div>
           <div class="form-group">
             <label for="totalPrice">Totalt pris:</label>
@@ -111,7 +111,7 @@
           <textarea id="specialRequests" name="specialRequests" rows="3" placeholder="Till exempel: Handikappanpassad plats, allergier, etc."></textarea>
         </div>
 
-        <button type="submit" class="btn-primary">Boka</button>
+        <button type="submit" class="btn-primary">Fortsätt till betalning</button>
       </form>
     </div>
   </main>
@@ -149,7 +149,7 @@
     // Funktion för att beräkna och uppdatera totalpriset
     function updatePrice() {
       // Hämta antal platser och konvertera till nummer
-      const seats = parseInt(document.getElementById('seats').value) || 0;
+      const seats = parseInt(document.getElementById('totalSeats').value) || 0;
       // Beräkna totalpris (antal platser * pris per plats)
       const totalPrice = seats * PRICE_PER_SEAT;
       // Uppdatera prisvisningen på sidan
@@ -157,7 +157,7 @@
     }
 
     // Lyssnare för att uppdatera pris när antal platser ändras
-    document.getElementById('seats').addEventListener('input', function() {
+    document.getElementById('totalSeats').addEventListener('input', function() {
       updatePrice();
     });
 
@@ -232,50 +232,68 @@
       // Avbryt om något fält är ogiltigt
       if (!isValid) return;
 
-      // Kontrollera om användaren är inloggad
-      const token = localStorage.getItem('token');
-      if (!token) {
-        alert('Du måste vara inloggad för att boka.');
-        window.location.href = '/login';
-        return;
-      }
-
       // Samla ihop all bokningsdata
       const movieId = "<%= movie.id %>";
       const screeningId = document.getElementById('screening').value;
-      const seats = document.getElementById('seats').value;
+      const totalSeats = document.getElementById('totalSeats').value;
       const specialRequests = document.getElementById('specialRequests').value;
-      const totalPrice = parseInt(document.getElementById('seats').value) * PRICE_PER_SEAT;
 
-      // Skicka bokningsförfrågan till servern
-      const response = await fetch('/api/bookings', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + token
-        },
-        body: JSON.stringify({
-          movieId,
-          screeningId,
-          seats,
-          totalPrice,
-          firstName: firstName.value.trim(),
-          lastName: lastName.value.trim(),
-          email: email.value.trim().toLowerCase(),
-          phone: phone.value.trim(),
-          specialRequests: specialRequests.trim()
-        })
-      });
+      // Visa laddningsmeddelande
+      const submitButton = document.querySelector('button[type="submit"]');
+      const originalButtonText = submitButton.textContent;
+      submitButton.textContent = 'Bearbetar...';
+      submitButton.disabled = true;
 
-      // Hantera svaret från servern
-      const data = await response.json();
-      if (response.ok) {
-        alert('Bokning lyckades!');
-        window.location.href = '/';
-      } else {
-        alert(data.error || 'Kunde inte boka.');
+      try {
+        // Hämta token om användaren är inloggad
+        const token = localStorage.getItem('token');
+        const headers = {
+          'Content-Type': 'application/json'
+        };
+        
+        // Lägg till token om den finns
+        if (token) {
+          headers['Authorization'] = 'Bearer ' + token;
+        }
+
+        // Skicka bokningsförfrågan till servern
+        const response = await fetch('/api/bookings', {
+          method: 'POST',
+          headers: headers,
+          body: JSON.stringify({
+            movieId,
+            screeningId,
+            totalSeats,
+            firstName: firstName.value.trim(),
+            lastName: lastName.value.trim(),
+            email: email.value.trim().toLowerCase(),
+            phone: phone.value.trim(),
+            specialRequests: specialRequests.trim()
+          })
+        });
+
+        // Hantera svaret från servern
+        const data = await response.json();
+        if (response.ok) {
+          // Omdirigera till betalningssidan
+          if (data.redirectUrl) {
+            window.location.href = data.redirectUrl;
+          } else {
+            window.location.href = '/';
+          }
+        } else {
+          // Visa felmeddelande
+          alert(data.error || 'Kunde inte skapa bokningen.');
+          submitButton.textContent = originalButtonText;
+          submitButton.disabled = false;
+        }
+      } catch (error) {
+        console.error('Bokningsfel:', error);
+        alert('Ett fel uppstod. Försök igen senare.');
+        submitButton.textContent = originalButtonText;
+        submitButton.disabled = false;
       }
     });
   </script>
 </body>
-</html> 
+</html>
