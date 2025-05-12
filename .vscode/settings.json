@@ -1,0 +1,9 @@
+{
+    "typescript.tsserver.nodePath": "C:\\Node\\node.exe",
+    "typescript.npm": "C:\\Node\\npm.cmd",
+    "terminal.integrated.env.windows": {
+        "PATH": "${env:PATH};C:\\Node"
+    },
+    "terminal.integrated.defaultProfile.windows": "Command Prompt"
+
+}

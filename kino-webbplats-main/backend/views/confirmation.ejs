@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="sv">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Betalning bekräftad</title>
+    <link rel="stylesheet" href="/style.css">
+</head>
+
+<body>
+    <header>
+        <h1>
+            <img src="/icons/italy.png" alt="Italiens flagga" style="height: 24px; vertical-align: middle; margin-right: 10px;">
+            Kino-Italien
+            <img src="/icons/italy.png" alt="Italiens flagga" style="height: 24px; vertical-align: middle; margin-left: 10px;">
+        </h1>
+    </header>
+    <nav>
+        <ul>
+            <li><a href="/">Hem</a></li>
+            <li><a href="/movies">Filmer</a></li>
+            <li><a href="/contact">Kontakt</a></li>
+            <li><a href="/about">Om Oss</a></li>
+            <li><a href="/login">Logga In</a></li>
+            <li><a href="/register">Registrera</a></li>
+        </ul>
+    </nav>
+
+    <div class="confirmation-container">
+        <div class="success-icon">✓</div>
+        <h2>Betalning godkänd!</h2>
+        <p>Tack för din betalning. Din bokning är nu bekräftad.</p>
+
+        <div class="ticket-details">
+            <h3><%= movie.title %></h3>
+            <p><strong>Datum:</strong> <%= new Date(screening.start_time).toLocaleDateString('sv-SE') %></p>
+            <p><strong>Tid:</strong> <%= new Date(screening.start_time).toLocaleTimeString('sv-SE', {hour: '2-digit', minute:'2-digit'}) %></p>
+            <p><strong>Namn:</strong> <%= booking.firstName %> <%= booking.lastName %></p>
+            <p><strong>Antal biljetter:</strong> <%= booking.totalSeats %></p>
+            <p><strong>Totalt belopp:</strong> <%= booking.totalPrice %> kr</p>
+            <p><strong>Betalningsmetod:</strong> <%= booking.paymentMethod === 'card' ? 'Kortbetalning' : booking.paymentMethod === 'swish' ? 'Swish' : 'Annan betalningsmetod' %></p>
+            <p><strong>Betalningsdatum:</strong> <%= new Date(booking.paidAt).toLocaleString('sv-SE') %></p>
+            <p><strong>Transaktions-ID:</strong> <%= booking.transactionId %></p>
+
+            <div class="ticket-id">KINO-<%= booking._id %></div>
+
+            <div class="qr-code">
+                <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=KINO<%= booking._id %>" alt="QR-kod för din biljett">
+                <p>Visa denna QR-kod vid ingången</p>
+            </div>
+        </div>
+
+        <div class="action-buttons">
+            <a href="/">Tillbaka till startsidan</a>
+            <a href="#" onclick="window.print(); return false;">Skriv ut biljett</a>
+        </div>
+        
+        <div class="email-notice">
+            <p>En bekräftelse har skickats till din e-post: <%= booking.email %></p>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-section">
+                <h3>Plats</h3>
+                <p>Mustafa 30, Rom, Italien</p>
+                <p>E-post: info@mustafa.com</p>
+                <p>Tel. +39 111-222-333</p>
+            </div>
+            <div class="footer-section">
+                <h3>Socialt</h3>
+                <a href="#"><img src="/icons/instagram.png" alt="Instagram"></a>
+                <a href="#"><img src="/icons/facebook.png" alt="Facebook"></a>
+                <a href="#"><img src="/icons/tik-tok.png" alt="TikTok"></a>
+            </div>
+            <div class="footer-section">
+                <h3>Håll Kontakten</h3>
+                <p>Få de senaste nyheterna & uppdateringarna</p>
+                <button>Registrera Dig</button>
+            </div>
+        </div>
+        <div class="footer-copy">
+            © 2025 av Kinofilmer. Alla rättigheter förbehållna.
+        </div>
+    </footer>
+</body>
+
+</html>

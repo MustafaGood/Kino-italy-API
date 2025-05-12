@@ -79,6 +79,32 @@ const bookingSchema = new mongoose.Schema({
     maxlength: [500, 'Specialönskemål kan inte vara längre än 500 tecken'] // Maxlängd på specialönskemål
   },
 
+  // Betalningsstatus för bokningen
+  paymentStatus: {
+    type: String,
+    enum: ['pending', 'completed', 'failed', 'refunded'],
+    default: 'pending'    // Standardvärde är väntande betalning
+  },
+
+  // Betalningsmetod som användes
+  paymentMethod: {
+    type: String,
+    enum: ['card', 'swish', 'other'],
+    required: false       // Sätts när betalning genomförs
+  },
+
+  // Transaktions-ID för betalningen
+  transactionId: {
+    type: String,
+    required: false       // Sätts när betalning genomförs
+  },
+
+  // Tidpunkt när betalningen genomfördes
+  paidAt: {
+    type: Date,
+    required: false       // Sätts när betalning genomförs
+  },
+
   // Tidpunkt när bokningen skapades
   createdAt: {
     type: Date,
