@@ -23,8 +23,11 @@
             <li><a href="/movies">Filmer</a></li>
             <li><a href="/contact">Kontakt</a></li>
             <li><a href="/about">Om Oss</a></li>
-            <li><a href="/login">Logga In</a></li>
-            <li><a href="/register">Registrera</a></li>
+            <li><a href="/movies">Filmer</a></li>
+            <li><a href="/tickets">Biljetter</a></li>
+            <li><a href="/login" id="loginLink" class="auth-link">Logga In</a></li>
+            <li><a href="/register" id="registerLink" class="auth-link">Registrera</a></li>
+            <li><a href="#" id="logoutLink" class="auth-link logout-link">Logga Ut</a></li>
         </ul>
     </nav>
 
@@ -42,40 +45,101 @@
     <div class="movie-grid" id="movie-grid">
         <% movies.forEach(function(movie) { %>
             <div class="movie">
-                <h2>
-                    <%= movie.attributes.title %>
-                </h2>
+                <h2><%= movie.attributes.title %></h2>
                 <% if (movie.attributes.image && movie.attributes.image.url) { %>
-                    <img src="<%= movie.attributes.image.url %>" alt="<%= movie.attributes.title %> Poster"
-                        style="width: 200px; height: auto;">
-                    <% } else { %>
-                        <img src="/images/placeholder.jpg" alt="Ingen bild tillgänglig"
-                            style="width: 200px; height: auto;">
-                        <% } %>
-                            <p>
-                                <%= movie.attributes.intro %>
-                            </p>
-                            <div class="rating">&#9733;&#9733;&#9733;&#9733;&#9734; <%= movie.attributes.rating || 'N/A'
-                                    %> / 5</div>
-                            <button onclick="location.href='/book/<%= movie.id %>'">Boka Nu</button>
-                            <button onclick="location.href='/reviews/<%= movie.id %>'">Recensioner</button>
+                    <img src="<%= movie.attributes.image.url %>" 
+                         alt="<%= movie.attributes.title %> Poster"
+                         style="width: 200px; height: auto;">
+                <% } else { %>
+                    <img src="/images/placeholder.jpg" 
+                         alt="Ingen bild tillgänglig"
+                         style="width: 200px; height: auto;">
+                <% } %>
+                <p><%= movie.attributes.intro %></p>
+                <div class="rating">
+                    &#9733;&#9733;&#9733;&#9733;&#9734; 
+                    <%= movie.attributes.rating || 'N/A' %> / 5
+                </div>
+                <button onclick="location.href='/book/<%= movie.id %>'" class="book-button">Boka Nu</button>
+                <button onclick="location.href='/reviews/<%= movie.id %>'" class="review-button">Recensioner</button>
             </div>
-            <% }); %>
+        <% }); %>
     </div>
 
     <script>
-        function filterMovies() {
-            const searchInput = document.getElementById('movie-search').value.toLowerCase();
-            const movies = document.querySelectorAll('.movie-grid .movie');
+        // Auth state management
+        const AuthManager = {
+            token: null,
+            loginLink: document.getElementById('loginLink'),
+            logoutLink: document.getElementById('logoutLink'),
 
-            movies.forEach(movie => {
-                const title = movie.querySelector('h2').textContent.toLowerCase();
-                if (title.includes(searchInput)) {
-                    movie.style.display = 'block';
+            init() {
+                this.token = localStorage.getItem('token');
+                this.updateUI();
+                this.setupEventListeners();
+            },
+
+            updateUI() {
+                if (this.token) {
+                    this.loginLink.classList.add('disabled');
+                    document.getElementById('registerLink').classList.add('disabled');
+                    this.logoutLink.classList.remove('disabled');
+                    this.logoutLink.style.display = 'inline-block';
                 } else {
-                    movie.style.display = 'none';
+                    this.loginLink.classList.remove('disabled');
+                    document.getElementById('registerLink').classList.remove('disabled');
+                    this.logoutLink.classList.add('disabled');
+                    this.logoutLink.style.display = 'none';
                 }
-            });
+            },
+
+            setupEventListeners() {
+                this.logoutLink.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.handleLogout();
+                });
+            },
+
+            handleLogout() {
+                try {
+                    localStorage.removeItem('token');
+                    this.token = null;
+                    this.updateUI();
+                    window.location.href = '/';
+                } catch (error) {
+                    console.error('Fel vid utloggning:', error);
+                    alert('Ett fel uppstod vid utloggning. Vänligen försök igen.');
+                }
+            }
+        };
+
+        // Movie search functionality
+        const MovieSearch = {
+            init() {
+                this.searchInput = document.getElementById('movie-search');
+                this.movieGrid = document.getElementById('movie-grid');
+            },
+
+            filterMovies() {
+                const searchTerm = this.searchInput.value.toLowerCase();
+                const movies = this.movieGrid.querySelectorAll('.movie');
+
+                movies.forEach(movie => {
+                    const title = movie.querySelector('h2').textContent.toLowerCase();
+                    movie.style.display = title.includes(searchTerm) ? 'block' : 'none';
+                });
+            }
+        };
+
+        // Initialize everything when the DOM is loaded
+        document.addEventListener('DOMContentLoaded', () => {
+            AuthManager.init();
+            MovieSearch.init();
+        });
+
+        // Make filterMovies available globally
+        function filterMovies() {
+            MovieSearch.filterMovies();
         }
     </script>
 
@@ -96,7 +160,7 @@
             <div class="footer-section">
                 <h3>Håll Kontakten</h3>
                 <p>Få de senaste nyheterna & uppdateringarna</p>
-                <button onclick="location.href='/register'">Registrera Dig</button>
+                <button onclick="location.href='/register'" class="register-button">Registrera Dig</button>
             </div>
         </div>
         <div class="footer-copy">
