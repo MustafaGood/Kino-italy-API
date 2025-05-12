@@ -111,7 +111,7 @@ app.get('/api/screenings', async (req, res) => {
     res.json(filtered);
   } catch (error) {
     console.error('Misslyckades med att hämta visningar:', error);
-    res.status(500).json({ message: 'Något gick fel!' });
+    res.status(500).json({ message: 'Något gick fel! Hej, Försöka igen' });
   }
 });
 
