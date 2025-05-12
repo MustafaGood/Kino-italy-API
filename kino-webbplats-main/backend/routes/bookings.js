@@ -7,34 +7,42 @@ const auth = require('../middleware/auth');
 
 // Skapa en ny bokning
 // Endpoint: POST /
-router.post('/', auth, async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     // Hämta all bokningsdata från förfrågan
-    const { movieId, screeningId, seats, firstName, lastName, email, phone, specialRequests } = req.body;
+    const { movieId, screeningId, totalSeats, firstName, lastName, email, phone, specialRequests } = req.body;
     
     // Beräkna totalpris (100 kr per plats)
     const pricePerSeat = 100; // SEK per plats
-    const totalPrice = seats * pricePerSeat;
+    const totalPrice = totalSeats * pricePerSeat;
 
     // Skapa ny bokning med all data
     const booking = new Booking({
-      user: req.user._id,      // Användarens ID från token
+      // Om användaren är inloggad, använd deras ID, annars null
+      user: req.user ? req.user._id : null,
       movie: movieId,          // Filmen som bokas
       screening: screeningId,  // Visningstid
-      seats,                   // Antal platser
-      totalPrice,             // Beräknat totalpris
-      firstName,              // Bokarens förnamn
-      lastName,               // Bokarens efternamn
-      email,                  // Bokarens e-post
-      phone,                  // Bokarens telefonnummer
-      specialRequests         // Eventuella särskilda önskemål
+      totalSeats,              // Antal platser
+      totalPrice,              // Beräknat totalpris
+      firstName,               // Bokarens förnamn
+      lastName,                // Bokarens efternamn
+      email,                   // Bokarens e-post
+      phone,                   // Bokarens telefonnummer
+      specialRequests,         // Eventuella särskilda önskemål
+      paymentStatus: 'pending' // Sätter betalningsstatus till väntande
     });
 
     // Spara bokningen i databasen
     await booking.save();
-    res.status(201).json(booking);
+    
+    // Omdirigera till betalning istället för att bara returnera bokningsobjektet
+    res.status(201).json({ 
+      booking, 
+      redirectUrl: `/payment/${booking._id}` 
+    });
   } catch (error) {
-    res.status(400).json({ error: 'Kunde inte skapa bokningen.' });
+    console.error('Bokningsfel:', error);
+    res.status(400).json({ error: 'Kunde inte skapa bokningen.', details: error.message });
   }
 });
 
@@ -44,8 +52,6 @@ router.get('/my-bookings', auth, async (req, res) => {
   try {
     // Hitta alla bokningar för den inloggade användaren
     const bookings = await Booking.find({ user: req.user._id })
-      .populate('movie')      // Hämta filmdetaljer
-      .populate('screening')  // Hämta visningsdetaljer
       .sort({ createdAt: -1 }); // Sortera efter datum (nyast först)
     res.json(bookings);
   } catch (error) {
@@ -66,12 +72,12 @@ router.patch('/:id/cancel', auth, async (req, res) => {
     }
 
     // Om bokningen redan är avbokad
-    if (booking.status === 'cancelled') {
+    if (booking.paymentStatus === 'refunded') {
       return res.status(400).json({ error: 'Bokningen är redan avbokad.' });
     }
 
-    // Markera bokningen som avbokad
-    booking.status = 'cancelled';
+    // Markera bokningen som avbokad/återbetald
+    booking.paymentStatus = 'refunded';
     await booking.save();
     res.json(booking);
   } catch (error) {
@@ -133,4 +139,4 @@ router.put('/:id', auth, async (req, res) => {
   }
 });
 
-module.exports = router; 
+module.exports = router;

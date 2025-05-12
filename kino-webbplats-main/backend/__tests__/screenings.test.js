@@ -15,7 +15,7 @@ describe('filterScreeningsWithinDays', () => {
         }
       });
     }
-    const result = filterScreeningsWithinDays(mockScreenings, );
+    const result = filterScreeningsWithinDays(mockScreenings, days);
     expect(result.length).toBe(10);
   });
 
@@ -52,12 +52,12 @@ describe('filterScreeningsWithinDays', () => {
       }
     ];
     const days = 5;
-    const result = filterScreeningsWithinDays(mockScreenings, 5);
+    const result = filterScreeningsWithinDays(mockScreenings, days);
     expect(result.length).toBe(0);
   });
 
   it('hanterar en tom lista av visningar', () => {
-    const result = filterScreeningsWithinDays([], 0);
-    expect(result.length).toBe(0);
+    const result = filterScreeningsWithinDays([], 5);
+    expect(result).toBeNull();
   });
 });
