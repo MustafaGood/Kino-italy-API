@@ -12,6 +12,7 @@ const authRoutes = require('./routes/auth');
 const bookingRoutes = require('./routes/bookings');
 const Booking = require('./models/Booking');
 const auth = require('./middleware/auth');
+const screeningsRoutes = require('./routes/screenings');
 
 // Funktion som ersätter markdown-it för enkel HTML-konvertering av markdown
 function simpleMarkdownRender(text) {
@@ -54,6 +55,7 @@ app.use(express.json()); //REMOVE/TA BORT NÄR VI INTE BEHÖVER JSON och använd
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/bookings', bookingRoutes);
+app.use('/api/screenings', screeningsRoutes);
 
 // Payment routes
 // Initierar betalningsprocessen för en bokning
@@ -222,20 +224,6 @@ function filterScreeningsWithinDays(screenings, days) {
     .sort((a, b) => new Date(a.attributes.start_time) - new Date(b.attributes.start_time))
     .slice(0, 10);
 }
-
-// API endpoint för att hämta visningar
-app.get('/api/screenings', async (req, res) => {
-  try {
-    const response = await fetch('https://plankton-app-xhkom.ondigitalocean.app/api/screenings?populate=movie');
-    if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-    const screenings = (await response.json()).data;
-    const filtered = filterScreeningsWithinDays(screenings, 5);
-    res.json(filtered);
-  } catch (error) {
-    console.error('Misslyckades med att hämta visningar:', error);
-    res.status(500).json({ message: 'Något gick fel! Försök igen' });
-  }
-});
 
 // Routes för inloggning och registrering - konsoliderade routes
 app.get('/login', (req, res) => {
