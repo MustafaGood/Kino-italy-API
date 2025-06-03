@@ -98,6 +98,14 @@ nav ul li a.disabled {
     border-bottom: 2px solid transparent;
 }
 
+.title {
+    color: #3d3d3d;
+}
+
+.title:hover {
+    color: #272727;
+}
+
 .logout-link {
     color: #ff6666 !important;
     font-weight: 600;
